@@ -11,7 +11,7 @@ output: github_document
 
 -   Proteomic data and covariates preparation: prep.prot_covs.Rmd
 
-```{r libraries, messages=FALSE}
+```{r libraries, messages=FALSE, echo=F}
 library(readr)           # Data loading/writing
 library(dplyr)           # Data management
 library(tidyr)           # Data management
