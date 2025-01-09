@@ -74,7 +74,7 @@ kable(D_PHENO)
 -   Example
 
 ```{r,echo=FALSE}
-D_IDs = data.frame(ID_meth=rownames(D_METH),ID_pheno=sample(1:100,10) %>% paste0('pheno_SubjID_',.))
+D_IDs = data.frame(ID_meth=colnames(D_METH),ID_pheno=sample(1:100,5) %>% paste0('pheno_SubjID_',.))
 kable(D_IDs)
 ```
 
