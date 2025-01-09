@@ -18,12 +18,12 @@ parse <- OptionParser()
 
 option_list <- list(
    make_option('--methFolder', type='character', help="Folder for methylation", action='store'),
-   make_option('--subID', type='character', help='Linkage file', action='store'),
-   make_option('--cpgList', type='character', help='Reference file for categorical variables', action='store'),
    make_option('--phenoFile', type='character', help='Output folder', action='store'),
    make_option('--phenoBinary', type='character', help='Is the phenotype binary? (yes/no)', action='store',default = 'no'),
-   make_option('--phenoName', type='character', help='Colunm name of target phenotype', action='store',default='yes'),
-   make_option('--outputFile', type='character', help='Filename for output', action='store',default='yes'))
+   make_option('--phenoName', type='character', help='Target phenotype', action='store',default=NULL),
+   make_option('--outputFile', type='character', help='Filename for output', action='store',default='yes'),
+   make_option('--subID', type='character', help='Linkage file', action='store',default=NULL),
+   make_option('--cpgList', type='character', help='CpG to include', action='store',default=NULL))
 
 
 args = commandArgs(trailingOnly=TRUE)
@@ -69,12 +69,13 @@ logging(' ')
 # M-values
 ls.meth.f = list.files(path = D_METH,full.names = T)
 meth <- as.list(ls.meth.f) %>%
-   lapply(.,FUN=read_tsv) %>%
+   lapply(.,FUN=readRDS) %>%
    bind_rows
 
 # CpGs to include in the analysis
 if(!is.null(opt[['cpgList']])) {
-   cpg.ID=readRDS(F_cpg)
+   cpg.ID=read_tsv(F_cpg,col_names = T)
+   colnames(cpg.ID)='cpg'
    meth=meth[rownames(meth) %in% cpg.ID$cpg, ]
 }
 
@@ -99,8 +100,14 @@ meth = t(meth)
 
 
 # load phenotypes
-pheno.dat=readRDS(F_pheno)
-rownames(pheno.dat)=pheno.dat$ID
+pheno.dat = read_tsv(F_pheno)
+if(!is.null(opt[['phenoName']])) {
+  x_phenoname = phenoName
+} else {
+  x_phenoname = colnames(pheno.dat)[2]
+}
+colnames(pheno.dat) = c('ID',x_phenoname)
+rownames(pheno.dat) = pheno.dat$ID
 
 
 # Prepare methylation and phenotype data ----------------------------------
