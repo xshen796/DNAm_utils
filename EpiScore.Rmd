@@ -1,0 +1,81 @@
+---
+title: Readme for LASSO_DNAm.R function
+author: X Shen  
+date: "\n`r format(Sys.time(), '%d %B, %Y')`"
+output: github_document
+---
+
+## Summary
+
+-   AD use data preparation: prep.AD_phenotype.Rmd
+
+-   Proteomic data and covariates preparation: prep.prot_covs.Rmd
+
+```{r libraries, messages=FALSE, echo=F}
+library(readr)           # Data loading/writing
+library(dplyr)           # Data management
+library(tidyr)           # Data management
+library(stringr)         # Text processing
+library(lubridate)       # Text processing
+library(pbapply)         # Process control
+library(knitr)           # Report generation
+```
+
+## Mandatory Input Data
+
+### Methylation data
+
+-   Input format: folder; Flag: --methFolder
+
+-   Description: DNAm data should be stored in .rds format. Columns are participants and rows are CpG sites.
+
+-   Example
+
+```{r,echo=FALSE}
+D_METH = data.frame(Subj1=runif(10),Subj2=runif(10),Subj3=runif(10),Subj4=runif(10),Subj5=runif(10))
+rownames(D_METH) = paste0('cg',sample(10000000:99999999,size=10))
+# use knirt to print D_METH
+kable(D_METH)
+```
+
+### Sumstats from training model
+
+-   Input format: .tsv file; Flag: --lassoCoef
+
+-   Description: A file with two columns, the first one for subject IDs and the other for weights. The first row should be the header.
+
+-   Example
+
+```{r,echo=FALSE}
+D_PHENO = data.frame(ID=sample(1:100,10) %>% paste0('pheno_SubjID_',.),pheno=runif(10))
+kable(D_PHENO)
+```
+
+
+## Optional Inputs
+
+### Subject IDs
+
+-   Input format: .tsv file
+
+-   Description: A file with one column of DNAm IDs for individuals to include in the analysis.
+
+-   Example
+
+```{r,echo=FALSE}
+D_IDs = data.frame(ID_meth=colnames(D_METH))
+kable(D_IDs)
+```
+
+
+------------------------------------------------------------------------
+
+## Example Script:
+
+Call the function from terminal:
+
+```{bash,eval=F}
+Rscript EpiScore.R --methFolder data/GS_DNAm \
+--lassoCoef result/LASSO_weights_MDD \
+--out result/episcore_mdd
+```
