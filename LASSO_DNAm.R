@@ -20,7 +20,6 @@ option_list <- list(
    make_option('--methFolder', type='character', help="Folder for methylation", action='store'),
    make_option('--phenoFile', type='character', help='Output folder', action='store'),
    make_option('--phenoBinary', type='character', help='Is the phenotype binary? (yes/no)', action='store',default = 'no'),
-   make_option('--phenoName', type='character', help='Target phenotype', action='store',default=NULL),
    make_option('--outputFile', type='character', help='Filename for output', action='store',default='yes'),
    make_option('--subID', type='character', help='Linkage file', action='store',default=NULL),
    make_option('--cpgList', type='character', help='CpG to include', action='store',default=NULL))
@@ -59,7 +58,6 @@ logging(c('Subject to include: ', F_subID))
 logging(c('CpGs to include: ', F_cpg))
 logging(c('Additional SNP CpGs to exclude: ', F_snp_ch_probe))
 logging(c('Phenotype file: ', F_pheno))
-logging(c('Phenotype: ', phenoName))
 logging(c('Is the phenotype binary?: ', phenoBinary))
 logging(c('Output file: ', F_output))
 logging(' ')
@@ -69,14 +67,17 @@ logging(' ')
 # M-values
 ls.meth.f = list.files(path = D_METH,full.names = T)
 meth <- as.list(ls.meth.f) %>%
-   lapply(.,FUN=readRDS) %>%
-   bind_rows
+   lapply(.,FUN=read_tsv) %>%
+   lapply(.,FUN=function(x){
+     colnames(x)[1]=ID 
+     return(x)}) %>% 
+   purrr::reduce(left_join,by='ID')
 
 # CpGs to include in the analysis
 if(!is.null(opt[['cpgList']])) {
    cpg.ID=read_tsv(F_cpg,col_names = T)
    colnames(cpg.ID)='cpg'
-   meth=meth[rownames(meth) %in% cpg.ID$cpg, ]
+   meth=meth[colnames(meth) %in% c('ID',cpg.ID$cpg), ]
 }
 
 # Use meth-pheno linkage file if provided
@@ -85,50 +86,39 @@ if(!is.null(opt[['subID']])) {
   ID_linkage=read_tsv(F_subID,col_names = F) 
   colnames(ID_linkage)=c('ID_meth','ID_pheno')
   # Subset methylation data and include those in the linkage file
-  meth = meth[rownames(meth) %in% ID_linkage$ID_meth,] %>% .[ID_linkage$ID_meth,]
+  meth = meth %>% right_join(.,ID_linkage,by=c('ID'='ID_meth'))
   # Replace methylation IDs with phenotype IDs
-  rownames(meth) = ID_linkage$ID_pheno
+  meth = meth %>% select(-ID) %>% rename(ID=ID_pheno) %>% select(ID,everything())
 }
 
 
 logging('Methylation data loaded')
-logging(c('NCpG = ',nrow(meth)))
-logging(c('NSubject = ',ncol(meth)))
-
-# Transpose DNAm data. One participant per row.
-meth = t(meth) 
+logging(c('NCpG = ',ncol(meth)-1))
+logging(c('NSubject = ',nrow(meth)))
 
 
 # load phenotypes
 pheno.dat = read_tsv(F_pheno)
-if(!is.null(opt[['phenoName']])) {
-  x_phenoname = phenoName
-} else {
-  x_phenoname = colnames(pheno.dat)[2]
-}
-colnames(pheno.dat) = c('ID',x_phenoname)
+
+colnames(pheno.dat) = c('ID','Pheno')
 rownames(pheno.dat) = pheno.dat$ID
 
 
 # Prepare methylation and phenotype data ----------------------------------
-# Two objects need to have matched IDs
 
 # Find matching IDs
-meth = meth[rownames(meth) %in% pheno.dat$ID,]
-a = intersect(row.names(meth), row.names(pheno.dat))
+meth_pheno = meth %>% right_join(.,pheno.dat,by='ID') %>% 
+  .[complete.cases(.),]
 
-logging(c('N for DNAm-phenotype intersecting data: ',length(a)))
+logging(c('N for DNAm-phenotype intersecting data: ',nrow(meth)))
 
-# Generate datasets with intersecting IDs for methylation and phenotype. IDs are in the same order.
-meth_intersected <- meth[a,]
-pheno_intersected <- pheno.dat[a,]
-# Check order is correct
-if (!all.equal(row.names(meth_intersected), row.names(pheno_intersected))){
-   stop('Methylation and phenotype data need to have matching IDs',call.=F)
-}
+# Transform methylation data into a matrix
+meth_intersected <- meth_pheno %>%
+  select(-Pheno) %>% 
+  tidyverse::remove_rownames %>% 
+  tidyverse::column_to_rownames(var="names")
 
-tmp.y=pheno_intersected[,phenoName]
-y.input = tmp.y
+y.input = meth_pheno$Pheno
 
 rm(meth) # Remove original large methylation matrix
 

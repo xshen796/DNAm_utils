@@ -61,39 +61,29 @@ calc_MRS <- function(F_mvalue,Obj_pheno,Obj_weight){
   logging(c('Processing:\t', F_mvalue %>% basename))
   
   # Load m-values
-  data <- readRDS(F_mvalue)
+  data <- read_tsv(F_mvalue)
   
   # Subset individuals for testing
   if(!is.null(opt[['subID']])) {
-    a = colnames(data) %in% Obj_pheno
-    meth = data[,a] %>% as.data.frame                           
+    meth = data %>% filter(ID %in% subID)                          
   }else{
     meth=data
   }
   rm(data) # remove after use 
   
-  # Subset CpGs that also present in the sumstats
-  a = rownames(meth) %in% Obj_weight$coef.name
-  meth.cpg = meth[a,]
-  
-  # Match weights and m-value data
-  probes <- intersect(Obj_weight$Marker, rownames(meth.cpg))
-  rownames(Obj_weight) = Obj_weight$Marker
-  b = meth.cpg[probes,]
-  p = Obj_weight[probes,]
-  
-  # Add weights
-  for (i in probes) {
-    b[i,]= b[i,]*p[i,"Weight"]
-  }
+  # Select intersecting CpGs
+  probes_ = intersect(colnames(meth),Obj_weight$Marker)
+  # Reorder methylation data columns
+  meth.cpg = meth %>% .[,c('ID',probes_)]
+  # Reorder sumstats
+  rownames(Obj_weight)=Obj_weight$Marker
+  Obj_weight = Obj_weight[probes_,]
   
   # Calculate sum scores
-  predicted_dep=colSums(b,na.rm=T)
+  out_score=meth.cpg %>% select(-ID) %>% as.matrix %*% Obj_weight$Weight
 
-  pred_dep.chr = data.frame(predicted_dep)
-  colnames(pred_dep.chr) <- F_mvalue %>% basename
-  rownames(pred_dep.chr) = colnames(b)
-  
+  pred_dep.chr = data.frame(ID=meth.cpg$ID,Score=out_score)
+
   return(pred_dep.chr)
 }
 
@@ -112,11 +102,13 @@ logging(' ')
 pred_dep.allCHR = as.list(ls.meth.file.loc) %>%
   lapply(.,FUN=calc_MRS,Obj_pheno=pheno_file,Obj_weight=coef.training) 
 
-ref.ID=rownames(pred_dep.allCHR[[1]])
+ref.ID=pred_dep.allCHR[[1]]$ID
 pred_dep.allCHR = pred_dep.allCHR %>%
-  bind_cols %>%
+  purrr::reduce(full_join,by='ID')%>%
+  select(-ID) %>%
   mutate(total.MRS=rowSums(.)) %>%
-  mutate(ID=ref.ID)
+  mutate(ID=ref.ID) %>% 
+  select(ID,total.MRS)
 
 write_tsv(pred_dep.allCHR, file=output)
 

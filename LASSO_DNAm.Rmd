@@ -31,9 +31,29 @@ library(knitr)           # Report generation
 
 -   Example
 
+```{r,echo=FALSE,eval=F}
+# Create a real testing file
+# In scratch space
+write_meth <- function(x.fname){
+  dat_ = fread(x.fname) %>% 
+    select(-FID) %>% 
+    head(n=100) %>% 
+    dplyr::rename(ID=IID)
+  outname_ = x.fname %>% basename %>% gsub(pattern = ".txt",replacement = ".tsv") %>% paste0('mval_test/',.)
+  write_tsv(dat_,file=outname_)
+}
+
+list.files(path = "residuals",pattern = ".txt",full.names = T) %>% 
+  pblapply(write_meth)
+```
+
+
 ```{r,echo=FALSE}
-D_METH = data.frame(Subj1=runif(10),Subj2=runif(10),Subj3=runif(10),Subj4=runif(10),Subj5=runif(10))
-rownames(D_METH) = paste0('cg',sample(10000000:99999999,size=10))
+D_METH = matrix(runif(100),nrow=10) %>% 
+  data.frame %>% 
+  mutate(ID=paste0('subj',1:10)) %>% 
+  select(ID,everything())
+colnames(D_METH)[2:ncol(D_METH)] = paste0('cg',sample(10000000:99999999,size=10))
 # use knirt to print D_METH
 kable(D_METH)
 ```
@@ -45,6 +65,15 @@ kable(D_METH)
 -   Description: A file with two columns, the first one for subject IDs and the other for phenotype values. The first row should be the header.
 
 -   Example
+
+```{r,echo=FALSE,eval=F}
+# Create a real testing file (phenotype)
+# In scratch space
+mval_ = read_tsv('mval_test/Res_chr21.tsv')
+pheno_ = data.frame(ID=mval_$IID,pheno=runif(100,0,1) %>% round(digits=0))
+write_tsv(pheno_,file='disorder.tsv')
+```
+
 
 ```{r,echo=FALSE}
 D_PHENO = data.frame(ID=sample(1:100,10) %>% paste0('pheno_SubjID_',.),pheno=runif(10))
@@ -73,8 +102,16 @@ kable(D_PHENO)
 
 -   Example
 
+```{r,echo=FALSE,eval=F}
+# Create a real testing file (phenotype)
+# In scratch space
+mval_ = read_tsv('mval_test/Res_chr21.tsv') %>% 
+  select(ID_meth=IID,ID_pheno=IID) 
+write_tsv(mval_,file='ID_linkage.tsv')
+```
+
 ```{r,echo=FALSE}
-D_IDs = data.frame(ID_meth=colnames(D_METH),ID_pheno=sample(1:100,5) %>% paste0('pheno_SubjID_',.))
+D_IDs = data.frame(ID_meth=D_METH$ID,ID_pheno=sample(1:100,10) %>% paste0('pheno_SubjID_',.))
 kable(D_IDs)
 ```
 
@@ -111,3 +148,13 @@ Rscript LASSO_DNAm.R --methFolder data/GS_DNAm \
 --subID data/DNAm_pheno_linkage.tsv \
 --outputFile result/LASSO_weights_MDD
 ```
+
+```{bash,eval=F,echo=F}
+Rscript LASSO_DNAm.R --methFolder data/GS_DNAm \
+--phenoFile data/MDD.tsv \
+--phenoBinary yes \
+--phenoName MDD \
+--subID data/DNAm_pheno_linkage.tsv \
+--outputFile result/LASSO_weights_MDD
+```
+
