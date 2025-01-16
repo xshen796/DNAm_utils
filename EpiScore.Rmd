@@ -82,3 +82,9 @@ Rscript EpiScore.R --methFolder data/GS_DNAm \
 --lassoCoef result/LASSO_weights_MDD \
 --out result/episcore_mdd
 ```
+
+```{bash,eval=F}
+Rscript EpiScore.R --methFolder mval_test \
+--lassoCoef LASSO_weights_MDD \
+--out episcore_mdd
+```
