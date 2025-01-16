@@ -32,8 +32,11 @@ library(knitr)           # Report generation
 -   Example
 
 ```{r,echo=FALSE}
-D_METH = data.frame(Subj1=runif(10),Subj2=runif(10),Subj3=runif(10),Subj4=runif(10),Subj5=runif(10))
-rownames(D_METH) = paste0('cg',sample(10000000:99999999,size=10))
+D_METH = matrix(runif(100),nrow=10) %>% 
+  data.frame %>% 
+  mutate(ID=paste0('subj',1:10)) %>% 
+  select(ID,everything())
+colnames(D_METH)[2:ncol(D_METH)] = paste0('cg',sample(10000000:99999999,size=10))
 # use knirt to print D_METH
 kable(D_METH)
 ```
