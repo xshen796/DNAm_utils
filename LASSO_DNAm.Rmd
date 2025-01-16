@@ -124,7 +124,7 @@ kable(D_IDs)
 -   Example
 
 ```{r,echo=FALSE}
-D_CPGs = data.frame(cpg=rownames(D_METH)[1:5])
+D_CPGs = data.frame(cpg=colnames(D_METH)[2:ncol(D_METH)])
 kable(D_CPGs)
 ```
 
@@ -149,12 +149,13 @@ Rscript LASSO_DNAm.R --methFolder data/GS_DNAm \
 --outputFile result/LASSO_weights_MDD
 ```
 
-```{bash,eval=F,echo=F}
-Rscript LASSO_DNAm.R --methFolder data/GS_DNAm \
---phenoFile data/MDD.tsv \
+```{bash,eval=F}
+cd TOYDATA_MRS
+Rscript LASSO_DNAm.R --methFolder mval_test \
+--phenoFile disorder.tsv \
 --phenoBinary yes \
 --phenoName MDD \
---subID data/DNAm_pheno_linkage.tsv \
---outputFile result/LASSO_weights_MDD
+--subID ID_linkage.tsv \
+--outputFile LASSO_weights_MDD
 ```
 
