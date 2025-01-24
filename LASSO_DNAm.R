@@ -56,7 +56,7 @@ logging(c("Started: ", date()))
 logging(c('Methylation data folder: ', D_METH))
 logging(c('Subject to include: ', F_subID))
 logging(c('CpGs to include: ', F_cpg))
-logging(c('Additional SNP CpGs to exclude: ', F_snp_ch_probe))
+#logging(c('Additional SNP CpGs to exclude: ', F_snp_ch_probe))
 logging(c('Phenotype file: ', F_pheno))
 logging(c('Is the phenotype binary?: ', phenoBinary))
 logging(c('Output file: ', F_output))
@@ -69,7 +69,7 @@ ls.meth.f = list.files(path = D_METH,full.names = T)
 meth <- as.list(ls.meth.f) %>%
    lapply(.,FUN=read_tsv) %>%
    lapply(.,FUN=function(x){
-     colnames(x)[1]=ID 
+     colnames(x)[1]='ID' 
      return(x)}) %>% 
    purrr::reduce(left_join,by='ID')
 
@@ -115,8 +115,8 @@ logging(c('N for DNAm-phenotype intersecting data: ',nrow(meth)))
 # Transform methylation data into a matrix
 meth_intersected <- meth_pheno %>%
   select(-Pheno) %>% 
-  tidyverse::remove_rownames %>% 
-  tidyverse::column_to_rownames(var="names")
+  tibble::remove_rownames() %>% 
+  tibble::column_to_rownames(var="ID")
 
 y.input = meth_pheno$Pheno
 
@@ -127,7 +127,7 @@ logging('Phenotype loaded')
 
 # Analysis ----------------------------------------------------------------
 
-X.bm <- as.matrix(big_meth)
+X.bm <- as.matrix(meth_intersected)
 
 # cv lasso: fivefold cross-validation used for hyperparametre tuning
 if (phenoBinary == 'yes') {
@@ -147,7 +147,7 @@ if (k.core > 1) {
 registerDoParallel(k.core)
 
 # Lasso regression
-cvfit <- cv.glmnet(x.bm, y.input, seed = 1234, nfolds = 5, family=x_model, parallel=TRUE, standardize=TRUE, type.measure='deviance') 
+cvfit <- cv.glmnet(X.bm, y.input, seed = 1234, nfolds = 5, family=x_model, parallel=TRUE, standardize=TRUE, type.measure='deviance') 
 
 # get coefficients
 weights = coef(cvfit,s='lambda.min') %>% .[-1,] %>%
@@ -164,8 +164,8 @@ logging('Lasso finished')
 save(cvfit,file=F_output %>% paste0(.,'.cvfit'))
 write_tsv(weights,file=F_output)
 
-logging('Lasso results saved in: ', F_output)
-logging('Lasso model saved in: ', F_output %>% paste0(.,'.cvfit'))
+logging(paste0('Lasso results saved in: ', F_output))
+logging(paste0('Lasso model saved in: ', F_output ,'.cvfit'))
 logging(c("Finished: ", date()))
 logging('\n')
 gc()      
