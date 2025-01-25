@@ -7,7 +7,6 @@
 # Basic settings ----------------------------------------------------------
 
 library(optparse)        # Parse arguments
-library(biglasso)        # Lasso regression
 library(dplyr)           # Data cleaning
 library(glmnet)          # LASSO regression      
 library(bigstatsr)       # For processing big matrices 
@@ -55,8 +54,6 @@ logging('Lasso regression')
 logging(c("Started: ", date()))
 logging(c('Methylation data folder: ', D_METH))
 logging(c('Subject to include: ', F_subID))
-logging(c('CpGs to include: ', F_cpg))
-logging(c('Additional SNP CpGs to exclude: ', F_snp_ch_probe))
 logging(c('Phenotype file: ', F_pheno))
 logging(c('Is the phenotype binary?: ', phenoBinary))
 logging(c('Output file: ', F_output))
@@ -69,12 +66,13 @@ ls.meth.f = list.files(path = D_METH,full.names = T)
 meth <- as.list(ls.meth.f) %>%
    lapply(.,FUN=read_tsv) %>%
    lapply(.,FUN=function(x){
-     colnames(x)[1]=ID 
+     colnames(x)[1]='ID' 
      return(x)}) %>% 
    purrr::reduce(left_join,by='ID')
 
 # CpGs to include in the analysis
 if(!is.null(opt[['cpgList']])) {
+   logging(c('CpGs to include: ', F_cpg))
    cpg.ID=read_tsv(F_cpg,col_names = T)
    colnames(cpg.ID)='cpg'
    meth=meth[colnames(meth) %in% c('ID',cpg.ID$cpg), ]
@@ -83,7 +81,7 @@ if(!is.null(opt[['cpgList']])) {
 # Use meth-pheno linkage file if provided
 if(!is.null(opt[['subID']])) {
   # Load linkage file
-  ID_linkage=read_tsv(F_subID,col_names = F) 
+  ID_linkage=read_tsv(F_subID) 
   colnames(ID_linkage)=c('ID_meth','ID_pheno')
   # Subset methylation data and include those in the linkage file
   meth = meth %>% right_join(.,ID_linkage,by=c('ID'='ID_meth'))
@@ -115,8 +113,7 @@ logging(c('N for DNAm-phenotype intersecting data: ',nrow(meth)))
 # Transform methylation data into a matrix
 meth_intersected <- meth_pheno %>%
   select(-Pheno) %>% 
-  tidyverse::remove_rownames %>% 
-  tidyverse::column_to_rownames(var="names")
+  tibble::column_to_rownames(var="ID")
 
 y.input = meth_pheno$Pheno
 
@@ -127,7 +124,7 @@ logging('Phenotype loaded')
 
 # Analysis ----------------------------------------------------------------
 
-X.bm <- as.matrix(big_meth)
+X.bm <- as.matrix(meth_intersected)
 
 # cv lasso: fivefold cross-validation used for hyperparametre tuning
 if (phenoBinary == 'yes') {
@@ -147,11 +144,11 @@ if (k.core > 1) {
 registerDoParallel(k.core)
 
 # Lasso regression
-cvfit <- cv.glmnet(x.bm, y.input, seed = 1234, nfolds = 5, family=x_model, parallel=TRUE, standardize=TRUE, type.measure='deviance') 
+cvfit <- cv.glmnet(X.bm, y.input, seed = 1234, nfolds = 5, family=x_model, parallel=TRUE, standardize=TRUE, type.measure='deviance') 
 
 # get coefficients
 weights = coef(cvfit,s='lambda.min') %>% .[-1,] %>%
-  data.frame(Protein=names(.),coef=.) %>% 
+  data.frame(Marker=names(.),coef=.) %>% 
   filter(coef!=0)
 rownames(weights) = NULL
 
