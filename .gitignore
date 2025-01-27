@@ -1,0 +1,7 @@
+# NEXTFLOW
+.nextflow.*
+.nextflow/
+work/
+
+# DATA
+*.tsv
