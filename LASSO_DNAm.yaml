@@ -1,0 +1,14 @@
+name: lasso
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+- r-base
+- r-tibble
+- r-purrr
+- r-dplyr
+- r-readr
+- r-stringr
+- r-glmnet
+- r-bigstatsr
+- r-doParallel
