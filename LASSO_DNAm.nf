@@ -117,7 +117,7 @@ process LASSO {
   """
   #!RScript
   dir.create("${library}", showWarnings = FALSE)
-  required_packages = c("dplyr", "readr", "stringr", "glmnet", "bigstatsr", "doParallel")
+  required_packages = c("tibble", "dplyr", "readr", "stringr", "purrr", "glmnet", "bigstatsr", "doParallel")
   for(p in required_packages) {
     if(!require(p, lib = c("${library}", .libPaths()), character.only = TRUE)) {
       install.packages(p, lib = "${library}", character.only = TRUE)
@@ -164,7 +164,7 @@ process LASSO {
   }
 
   # Find N of available cores for paralleling
-  k.core = as.numeric("${task.cpu}")
+  k.core = ${task.cpu}
   registerDoParallel(k.core)
 
   # Lasso regression
