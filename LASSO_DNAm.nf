@@ -20,6 +20,7 @@ workflow {
   /* Install required packages */
   // get R version
   VERSION_CH = VERSION()
+    .view(it -> "Running R ${it[1]} on ${it[0]}, compiled with ${it[2]} / ${it[3]}")
   LIBRARY_CH = PACKAGES(VERSION_CH)
 
   // /* Methylation data */
@@ -65,10 +66,10 @@ process PACKAGES {
   """
   #!Rscript
   dir.create("${platform}-${version}")
-  required_packages = c("dplyr", "readr", "stringr", "glmnet", "bigstatsr", "doParallel")
+  required_packages = c("dplyr", "readr", "stringr", "purrr", "glmnet", "doParallel")
   for(p in required_packages) {
     if(!require(p, character.only = TRUE)) {
-      install.packages(p, lib = "${platform}-${version}", character.only = TRUE)
+      install.packages(p, lib = "${platform}-${version}", repos = "https://cloud.r-project.org", character.only = TRUE)
     }
   }
   for(p in required_packages) {
@@ -117,7 +118,7 @@ process LASSO {
   script:
   """
   #!Rscript
-  required_packages = c("tibble", "dplyr", "readr", "stringr", "purrr", "glmnet", "bigstatsr", "doParallel")
+  required_packages = c("tibble", "dplyr", "readr", "stringr", "purrr", "glmnet", "doParallel")
   for(p in required_packages) {
     library(p, lib = c("${library}", .libPaths()), character.only = TRUE)
   }
@@ -129,7 +130,7 @@ process LASSO {
    lapply(.,FUN=function(x){
      colnames(x)[1]='ID' 
      return(x)}) %>%
-   purrr::reduce(left_join,by='ID')
+  reduce(left_join,by='ID')
 
    # load phenotypes
   pheno.dat = read_tsv("${pheno}")
