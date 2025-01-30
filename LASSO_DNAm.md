@@ -161,10 +161,11 @@ nextflow run LASSO_DNAm.nf \
 ```bash
 nextflow run LASSO_DNAm.nf \
 -resume -qs 4 \
---meth "mval_test/*.tsv" \
---pheno disorder.tsv \
+--meth "TOYDATA_MRS/mval_test/*.tsv" \
+--pheno TOYDATA_MRS/disorder.tsv \
 --binary yes \
 -profile conda \
 -config LASSO_DNAm.config \
--with-conda
+-with-conda \
+-with-report
 ```

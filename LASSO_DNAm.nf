@@ -12,6 +12,8 @@ params.binary = "no"
 params.linker = null
 // GpGs to include
 params.cpgs = null
+// multiprocessing
+params.cores = 4
 
 workflow {
 
@@ -42,10 +44,10 @@ process VERSION {
 
   script:
   """
-  RPLATFORM=\$(RScript -e 'cat(R.version[["platform"]])')
-  RVERSION=\$(RScript -e 'cat(R.version[["major"]], ".", R.version[["minor"]], sep = "")')
-  C=\$(RScript -e 'cat(R_compiled_by()[["C"]])')
-  FORTRAN=\$(RScript -e 'cat(R_compiled_by()[["Fortran"]])')
+  RPLATFORM=\$(Rscript -e 'cat(R.version[["platform"]])')
+  RVERSION=\$(Rscript -e 'cat(R.version[["major"]], ".", R.version[["minor"]], sep = "")')
+  C=\$(Rscript -e 'cat(R_compiled_by()[["C"]])')
+  FORTRAN=\$(Rscript -e 'cat(R_compiled_by()[["Fortran"]])')
   """
 }
 
@@ -61,7 +63,7 @@ process PACKAGES {
 
   script:
   """
-  #!RScript
+  #!Rscript
   dir.create("${platform}-${version}")
   required_packages = c("dplyr", "readr", "stringr", "glmnet", "bigstatsr", "doParallel")
   for(p in required_packages) {
@@ -84,7 +86,7 @@ process RDS {
 
   script:
   """
-  #!RScript
+  #!Rscript
   dir.create("${library}", showWarnings = FALSE)
   required_packages = c("dplyr", "readr")
   for(p in required_packages) {
@@ -102,7 +104,8 @@ process RDS {
 process LASSO {
   tag("${pheno.baseName}")
 
-  cpu = 8
+  cpu = params.cores
+  memory = (params.cores * 16).GB
 
   input:
   path(rds)
@@ -115,7 +118,7 @@ process LASSO {
 
   script:
   """
-  #!RScript
+  #!Rscript
   dir.create("${library}", showWarnings = FALSE)
   required_packages = c("tibble", "dplyr", "readr", "stringr", "purrr", "glmnet", "bigstatsr", "doParallel")
   for(p in required_packages) {
