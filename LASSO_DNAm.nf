@@ -22,7 +22,7 @@ workflow {
   VERSION_CH = VERSION()
   LIBRARY_CH = PACKAGES(VERSION_CH)
 
-  /* Methylation data */
+  // /* Methylation data */
   METH_CH = Channel.fromPath(params.meth, checkIfExists: true)
   RDS_CH = RDS(METH_CH.combine(LIBRARY_CH))
     .collect()
@@ -71,6 +71,9 @@ process PACKAGES {
       install.packages(p, lib = "${platform}-${version}", character.only = TRUE)
     }
   }
+  for(p in required_packages) {
+    library(p, lib = c("${platform}-${version}", .libPaths()), character.only = TRUE)
+  }
   """
 }
 
@@ -87,13 +90,8 @@ process RDS {
   script:
   """
   #!Rscript
-  dir.create("${library}", showWarnings = FALSE)
-  required_packages = c("dplyr", "readr")
-  for(p in required_packages) {
-    if(!require(p, lib = c("${library}", .libPaths()), character.only = TRUE)) {
-      install.packages(p, lib = "${library}", character.only = TRUE)
-    }
-  }
+  library(dplyr, lib = c("${library}", .libPaths()))
+  library(readr, lib = c("${library}", .libPaths()))
 
   meth <- read_tsv("${tsv}")
   saveRDS(meth, "${tsv.baseName}.rds")
@@ -119,12 +117,9 @@ process LASSO {
   script:
   """
   #!Rscript
-  dir.create("${library}", showWarnings = FALSE)
   required_packages = c("tibble", "dplyr", "readr", "stringr", "purrr", "glmnet", "bigstatsr", "doParallel")
   for(p in required_packages) {
-    if(!require(p, lib = c("${library}", .libPaths()), character.only = TRUE)) {
-      install.packages(p, lib = "${library}", character.only = TRUE)
-    }
+    library(p, lib = c("${library}", .libPaths()), character.only = TRUE)
   }
 
   meth_files <- str_split("${rds}", pattern = " ")[[1]]
