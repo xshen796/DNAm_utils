@@ -3,6 +3,7 @@
 .nextflow/
 work/
 report-*.html
+dag-*.html
 
 # DATA
 *.tsv
