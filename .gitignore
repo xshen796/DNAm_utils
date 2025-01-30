@@ -2,6 +2,7 @@
 .nextflow.*
 .nextflow/
 work/
+report-*.html
 
 # DATA
 *.tsv
