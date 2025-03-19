@@ -1,0 +1,9 @@
+# NEXTFLOW
+.nextflow.*
+.nextflow/
+work/
+report-*.html
+dag-*.html
+
+# DATA
+*.tsv

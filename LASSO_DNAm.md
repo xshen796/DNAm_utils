@@ -145,3 +145,55 @@ Rscript LASSO_DNAm.R --methFolder mval_test \
 --subID ID_linkage.tsv \
 --outputFile LASSO_weights_MDD
 ```
+
+## Run as a workflow
+
+```bash
+nextflow run LASSO_DNAm.nf \
+-resume -qs 4 \
+--meth "mval_test/*.tsv" \
+--pheno disorder.tsv \
+--binary yes
+```
+
+### Run with conda
+
+```bash
+nextflow run LASSO_DNAm.nf \
+-resume -qs 4 \
+--meth "TOYDATA_MRS/mval_test/*.tsv" \
+--pheno TOYDATA_MRS/disorder.tsv \
+--binary yes \
+-profile conda \
+-config LASSO_DNAm.config \
+-with-conda \
+-with-report
+```
+
+### Run with docker
+
+```bash
+nextflow run LASSO_DNAm.nf \
+-resume -qs 4 \
+--meth "TOYDATA_MRS/mval_test/*.tsv" \
+--pheno TOYDATA_MRS/disorder.tsv \
+--binary yes \
+-profile docker \
+-config LASSO_DNAm.config \
+-with-docker \
+-with-report
+```
+
+### Run with singularity
+
+```bash
+nextflow run LASSO_DNAm.nf \
+-resume -qs 4 \
+--meth "TOYDATA_MRS/mval_test/*.tsv" \
+--pheno TOYDATA_MRS/disorder.tsv \
+--binary yes \
+-profile singularity \
+-config LASSO_DNAm.config \
+-with-singularity \
+-with-report
+```
