@@ -27,9 +27,9 @@ option_list <- list(
 args = commandArgs(trailingOnly=TRUE)
 opt <- parse_args(OptionParser(option_list=option_list), args=args)
 
-meth.dat.loc = opt$methdat
+D_METH = opt$methFolder
 sub.ID = opt$subID
-lasso.coef.datloc = opt$lassoCoef
+F_LassoCoef = opt$lassoCoef
 output = opt$out
 
 
@@ -39,11 +39,11 @@ output = opt$out
 pheno_file <- read_tsv(sub.ID) %>% .[,1] %>% as.vector
 
 ## LASSO co-efficients
-coef.training <- read_tsv(lasso.coef.datloc)
+coef.training <- read_tsv(F_LassoCoef)
 colnames(coef.training)=c('Marker','Weight')
 
 ## Load methylation data files
-ls.meth.file.loc=list.files(path=meth.dat.loc,full.names=T)
+ls.meth.file.loc <- list.files(path = D_METH,full.names=T)
 
 
 # Define functions --------------------------------------------------------

@@ -13,9 +13,9 @@ X Shen
 
 ### Methylation data
 
-  - Input format: folder; Flag: –methFolder
+  - Input format: folder; Flag: methFolder
 
-  - Description: DNAm data should be stored in .rds format. Columns are
+  - Description: DNAm data should be stored in .tsv format. Columns are
     participants and rows are CpG
 sites.
 
