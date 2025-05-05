@@ -602,165 +602,185 @@ body {
 <body>
 
 <h1 id="readme-for-lasso_dnam.r-function">Readme for LASSO_DNAm.R function</h1>
-<p>X Shen 16 January, 2025</p>
+<p>X Shen 05 May, 2025</p>
 <h2 id="summary">Summary</h2>
 <ul>
 <li><p>AD use data preparation: prep.AD_phenotype.Rmd</p></li>
 <li><p>Proteomic data and covariates preparation: prep.prot_covs.Rmd</p></li>
 </ul>
+<!-- end list -->
+
+<pre><code>## 
+## Attaching package: 'dplyr'
+
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+
+## 
+## Attaching package: 'lubridate'
+
+## The following objects are masked from 'package:base':
+## 
+##     date, intersect, setdiff, union
+</code></pre>
 <h2 id="mandatory-input-data">Mandatory Input Data</h2>
 <h3 id="methylation-data">Methylation data</h3>
 <ul>
 <li><p>Input format: folder; Flag: –methFolder</p></li>
-<li><p>Description: DNAm data should be stored in .rds format. Columns are participants and rows are CpG sites.</p></li>
+<li><p>Description: DNAm data should be stored in .tsv format. Columns are participants and rows are CpG sites.</p></li>
 <li><p>Example</p></li>
 </ul>
 <table>
 <thead>
 <tr class="header">
 <th align="left">ID</th>
-<th align="right">cg31602765</th>
-<th align="right">cg71696187</th>
-<th align="right">cg97019543</th>
-<th align="right">cg53860778</th>
-<th align="right">cg56733852</th>
-<th align="right">cg70989893</th>
-<th align="right">cg55108201</th>
-<th align="right">cg60940600</th>
-<th align="right">cg18973002</th>
-<th align="right">cg17936622</th>
+<th align="right">cg54709776</th>
+<th align="right">cg28852643</th>
+<th align="right">cg82822168</th>
+<th align="right">cg55838641</th>
+<th align="right">cg76971752</th>
+<th align="right">cg87478078</th>
+<th align="right">cg53597127</th>
+<th align="right">cg82414550</th>
+<th align="right">cg22927532</th>
+<th align="right">cg93711783</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">subj1</td>
-<td align="right">0.5426508</td>
-<td align="right">0.8308050</td>
-<td align="right">0.8638713</td>
-<td align="right">0.7398929</td>
-<td align="right">0.0073558</td>
-<td align="right">0.9303585</td>
-<td align="right">0.5460656</td>
-<td align="right">0.8375024</td>
-<td align="right">0.7690491</td>
-<td align="right">0.4602612</td>
+<td align="right">0.2482869</td>
+<td align="right">0.1693756</td>
+<td align="right">0.7831526</td>
+<td align="right">0.0864535</td>
+<td align="right">0.1718502</td>
+<td align="right">0.3857964</td>
+<td align="right">0.9152106</td>
+<td align="right">0.0582040</td>
+<td align="right">0.7122378</td>
+<td align="right">0.8708578</td>
 </tr>
 <tr class="even">
 <td align="left">subj2</td>
-<td align="right">0.8711902</td>
-<td align="right">0.3836287</td>
-<td align="right">0.2282740</td>
-<td align="right">0.0786861</td>
-<td align="right">0.5134351</td>
-<td align="right">0.0758845</td>
-<td align="right">0.5038607</td>
-<td align="right">0.3202991</td>
-<td align="right">0.4782370</td>
-<td align="right">0.0080568</td>
+<td align="right">0.3109062</td>
+<td align="right">0.0538198</td>
+<td align="right">0.9155095</td>
+<td align="right">0.9262595</td>
+<td align="right">0.2543646</td>
+<td align="right">0.2829651</td>
+<td align="right">0.2876860</td>
+<td align="right">0.1389582</td>
+<td align="right">0.2536123</td>
+<td align="right">0.4385759</td>
 </tr>
 <tr class="odd">
 <td align="left">subj3</td>
-<td align="right">0.9799140</td>
-<td align="right">0.7358747</td>
-<td align="right">0.9705937</td>
-<td align="right">0.1328087</td>
-<td align="right">0.1736585</td>
-<td align="right">0.7732009</td>
-<td align="right">0.0972177</td>
-<td align="right">0.1487135</td>
-<td align="right">0.1880891</td>
-<td align="right">0.0179580</td>
+<td align="right">0.6819090</td>
+<td align="right">0.9368344</td>
+<td align="right">0.4923846</td>
+<td align="right">0.0411139</td>
+<td align="right">0.4372920</td>
+<td align="right">0.0208660</td>
+<td align="right">0.1573284</td>
+<td align="right">0.3723307</td>
+<td align="right">0.1524631</td>
+<td align="right">0.7464698</td>
 </tr>
 <tr class="even">
 <td align="left">subj4</td>
-<td align="right">0.1267063</td>
-<td align="right">0.6941676</td>
-<td align="right">0.7782867</td>
-<td align="right">0.7046723</td>
-<td align="right">0.0995432</td>
-<td align="right">0.9401981</td>
-<td align="right">0.4495978</td>
-<td align="right">0.1550584</td>
-<td align="right">0.2868786</td>
-<td align="right">0.2995916</td>
+<td align="right">0.0675364</td>
+<td align="right">0.4323795</td>
+<td align="right">0.0534522</td>
+<td align="right">0.0712538</td>
+<td align="right">0.1296514</td>
+<td align="right">0.0463922</td>
+<td align="right">0.8339990</td>
+<td align="right">0.4650169</td>
+<td align="right">0.1519323</td>
+<td align="right">0.2194656</td>
 </tr>
 <tr class="odd">
 <td align="left">subj5</td>
-<td align="right">0.6776002</td>
-<td align="right">0.1978433</td>
-<td align="right">0.6227569</td>
-<td align="right">0.7360512</td>
-<td align="right">0.3407551</td>
-<td align="right">0.5141476</td>
-<td align="right">0.0183764</td>
-<td align="right">0.0456632</td>
-<td align="right">0.6678010</td>
-<td align="right">0.1245773</td>
+<td align="right">0.4254030</td>
+<td align="right">0.2467163</td>
+<td align="right">0.7728887</td>
+<td align="right">0.9949852</td>
+<td align="right">0.0482666</td>
+<td align="right">0.5965141</td>
+<td align="right">0.7694369</td>
+<td align="right">0.6052887</td>
+<td align="right">0.5636686</td>
+<td align="right">0.5707898</td>
 </tr>
 <tr class="even">
 <td align="left">subj6</td>
-<td align="right">0.0166572</td>
-<td align="right">0.3164013</td>
-<td align="right">0.8413549</td>
-<td align="right">0.6894399</td>
-<td align="right">0.8933338</td>
-<td align="right">0.0651360</td>
-<td align="right">0.7104200</td>
-<td align="right">0.3621154</td>
-<td align="right">0.7454814</td>
-<td align="right">0.7248059</td>
+<td align="right">0.0658242</td>
+<td align="right">0.9262703</td>
+<td align="right">0.0405884</td>
+<td align="right">0.3061353</td>
+<td align="right">0.9042184</td>
+<td align="right">0.8671214</td>
+<td align="right">0.0145059</td>
+<td align="right">0.1297851</td>
+<td align="right">0.3061270</td>
+<td align="right">0.9872464</td>
 </tr>
 <tr class="odd">
 <td align="left">subj7</td>
-<td align="right">0.1993932</td>
-<td align="right">0.5187576</td>
-<td align="right">0.5056179</td>
-<td align="right">0.7695172</td>
-<td align="right">0.4207007</td>
-<td align="right">0.7646030</td>
-<td align="right">0.1927723</td>
-<td align="right">0.5411525</td>
-<td align="right">0.6863808</td>
-<td align="right">0.3383740</td>
+<td align="right">0.9321966</td>
+<td align="right">0.0790080</td>
+<td align="right">0.2244878</td>
+<td align="right">0.2691574</td>
+<td align="right">0.6297877</td>
+<td align="right">0.9310438</td>
+<td align="right">0.6045357</td>
+<td align="right">0.3586747</td>
+<td align="right">0.5852930</td>
+<td align="right">0.3816709</td>
 </tr>
 <tr class="even">
 <td align="left">subj8</td>
-<td align="right">0.4768868</td>
-<td align="right">0.2149300</td>
-<td align="right">0.5982412</td>
-<td align="right">0.1772145</td>
-<td align="right">0.0473879</td>
-<td align="right">0.7801199</td>
-<td align="right">0.4691668</td>
-<td align="right">0.0118916</td>
-<td align="right">0.5009157</td>
-<td align="right">0.8220485</td>
+<td align="right">0.4597800</td>
+<td align="right">0.8853938</td>
+<td align="right">0.2391810</td>
+<td align="right">0.9072450</td>
+<td align="right">0.8437561</td>
+<td align="right">0.6064826</td>
+<td align="right">0.3375272</td>
+<td align="right">0.5984434</td>
+<td align="right">0.2207606</td>
+<td align="right">0.7673589</td>
 </tr>
 <tr class="odd">
 <td align="left">subj9</td>
-<td align="right">0.8027522</td>
-<td align="right">0.5091437</td>
-<td align="right">0.7558950</td>
-<td align="right">0.5626690</td>
-<td align="right">0.5214343</td>
-<td align="right">0.9968115</td>
-<td align="right">0.7078440</td>
-<td align="right">0.2392420</td>
-<td align="right">0.1290033</td>
-<td align="right">0.9332041</td>
+<td align="right">0.1236418</td>
+<td align="right">0.0184098</td>
+<td align="right">0.5928898</td>
+<td align="right">0.1659032</td>
+<td align="right">0.5669628</td>
+<td align="right">0.9966704</td>
+<td align="right">0.3228531</td>
+<td align="right">0.9893940</td>
+<td align="right">0.4610926</td>
+<td align="right">0.4363251</td>
 </tr>
 <tr class="even">
 <td align="left">subj10</td>
-<td align="right">0.1189982</td>
-<td align="right">0.2283194</td>
-<td align="right">0.4340610</td>
-<td align="right">0.2811943</td>
-<td align="right">0.4188920</td>
-<td align="right">0.2916319</td>
-<td align="right">0.1707687</td>
-<td align="right">0.1370217</td>
-<td align="right">0.7626721</td>
-<td align="right">0.0343706</td>
+<td align="right">0.7220897</td>
+<td align="right">0.9061156</td>
+<td align="right">0.6467075</td>
+<td align="right">0.0731315</td>
+<td align="right">0.1637132</td>
+<td align="right">0.3142062</td>
+<td align="right">0.5028191</td>
+<td align="right">0.9929464</td>
+<td align="right">0.5227294</td>
+<td align="right">0.0641425</td>
 </tr>
 </tbody>
 </table>
@@ -779,44 +799,44 @@ body {
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">pheno_SubjID_56</td>
-<td align="right">0.4608183</td>
+<td align="left">pheno_SubjID_83</td>
+<td align="right">0.6694571</td>
 </tr>
 <tr class="even">
-<td align="left">pheno_SubjID_27</td>
-<td align="right">0.2959442</td>
-</tr>
-<tr class="odd">
 <td align="left">pheno_SubjID_25</td>
-<td align="right">0.4563402</td>
-</tr>
-<tr class="even">
-<td align="left">pheno_SubjID_13</td>
-<td align="right">0.5750666</td>
+<td align="right">0.4794264</td>
 </tr>
 <tr class="odd">
-<td align="left">pheno_SubjID_48</td>
-<td align="right">0.6103059</td>
+<td align="left">pheno_SubjID_63</td>
+<td align="right">0.6778179</td>
 </tr>
 <tr class="even">
-<td align="left">pheno_SubjID_71</td>
-<td align="right">0.2595902</td>
+<td align="left">pheno_SubjID_50</td>
+<td align="right">0.8215896</td>
 </tr>
 <tr class="odd">
-<td align="left">pheno_SubjID_24</td>
-<td align="right">0.7131882</td>
-</tr>
-<tr class="even">
 <td align="left">pheno_SubjID_14</td>
-<td align="right">0.7845280</td>
-</tr>
-<tr class="odd">
-<td align="left">pheno_SubjID_23</td>
-<td align="right">0.3225498</td>
+<td align="right">0.3226991</td>
 </tr>
 <tr class="even">
-<td align="left">pheno_SubjID_86</td>
-<td align="right">0.1958193</td>
+<td align="left">pheno_SubjID_47</td>
+<td align="right">0.4990293</td>
+</tr>
+<tr class="odd">
+<td align="left">pheno_SubjID_40</td>
+<td align="right">0.1262363</td>
+</tr>
+<tr class="even">
+<td align="left">pheno_SubjID_5</td>
+<td align="right">0.6004832</td>
+</tr>
+<tr class="odd">
+<td align="left">pheno_SubjID_10</td>
+<td align="right">0.6608682</td>
+</tr>
+<tr class="even">
+<td align="left">pheno_SubjID_88</td>
+<td align="right">0.7593075</td>
 </tr>
 </tbody>
 </table>
@@ -849,43 +869,43 @@ body {
 <tbody>
 <tr class="odd">
 <td align="left">subj1</td>
-<td align="left">pheno_SubjID_24</td>
+<td align="left">pheno_SubjID_13</td>
 </tr>
 <tr class="even">
 <td align="left">subj2</td>
-<td align="left">pheno_SubjID_76</td>
+<td align="left">pheno_SubjID_59</td>
 </tr>
 <tr class="odd">
 <td align="left">subj3</td>
-<td align="left">pheno_SubjID_17</td>
+<td align="left">pheno_SubjID_11</td>
 </tr>
 <tr class="even">
 <td align="left">subj4</td>
-<td align="left">pheno_SubjID_55</td>
+<td align="left">pheno_SubjID_3</td>
 </tr>
 <tr class="odd">
 <td align="left">subj5</td>
-<td align="left">pheno_SubjID_65</td>
+<td align="left">pheno_SubjID_54</td>
 </tr>
 <tr class="even">
 <td align="left">subj6</td>
-<td align="left">pheno_SubjID_50</td>
+<td align="left">pheno_SubjID_72</td>
 </tr>
 <tr class="odd">
 <td align="left">subj7</td>
-<td align="left">pheno_SubjID_51</td>
+<td align="left">pheno_SubjID_60</td>
 </tr>
 <tr class="even">
 <td align="left">subj8</td>
-<td align="left">pheno_SubjID_100</td>
+<td align="left">pheno_SubjID_52</td>
 </tr>
 <tr class="odd">
 <td align="left">subj9</td>
-<td align="left">pheno_SubjID_18</td>
+<td align="left">pheno_SubjID_47</td>
 </tr>
 <tr class="even">
 <td align="left">subj10</td>
-<td align="left">pheno_SubjID_93</td>
+<td align="left">pheno_SubjID_42</td>
 </tr>
 </tbody>
 </table>
@@ -903,34 +923,34 @@ body {
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">cg31602765</td>
+<td align="left">cg54709776</td>
 </tr>
 <tr class="even">
-<td align="left">cg71696187</td>
+<td align="left">cg28852643</td>
 </tr>
 <tr class="odd">
-<td align="left">cg97019543</td>
+<td align="left">cg82822168</td>
 </tr>
 <tr class="even">
-<td align="left">cg53860778</td>
+<td align="left">cg55838641</td>
 </tr>
 <tr class="odd">
-<td align="left">cg56733852</td>
+<td align="left">cg76971752</td>
 </tr>
 <tr class="even">
-<td align="left">cg70989893</td>
+<td align="left">cg87478078</td>
 </tr>
 <tr class="odd">
-<td align="left">cg55108201</td>
+<td align="left">cg53597127</td>
 </tr>
 <tr class="even">
-<td align="left">cg60940600</td>
+<td align="left">cg82414550</td>
 </tr>
 <tr class="odd">
-<td align="left">cg18973002</td>
+<td align="left">cg22927532</td>
 </tr>
 <tr class="even">
-<td align="left">cg17936622</td>
+<td align="left">cg93711783</td>
 </tr>
 </tbody>
 </table>
@@ -944,19 +964,19 @@ body {
 <hr />
 <h2 id="example-script:">Example Script:</h2>
 <p>Call the function from terminal:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ex">Rscript</span> LASSO_DNAm.R --methFolder data/GS_DNAm \</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">--phenoFile data/MDD.tsv \</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">--phenoBinary yes \</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">--phenoName MDD \</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">--subID data/DNAm_pheno_linkage.tsv \</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">--outputFile result/LASSO_weights_MDD</a></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="bu">cd</span> TOYDATA_MRS</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="ex">Rscript</span> LASSO_DNAm.R --methFolder mval_test \</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">--phenoFile disorder.tsv \</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">--phenoBinary yes \</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">--phenoName MDD \</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">--subID ID_linkage.tsv \</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">--outputFile LASSO_weights_MDD</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ex">Rscript</span> LASSO_DNAm.R --methFolder data/GS_DNAm \</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">--phenoFile data/MDD.tsv \</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">--phenoBinary yes \</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">--phenoName MDD \</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">--subID data/DNAm_pheno_linkage.tsv \</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">--outputFile result/LASSO_weights_MDD</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="bu">cd</span> TOYDATA_MRS</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="ex">Rscript</span> LASSO_DNAm.R --methFolder mval_test \</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">--phenoFile disorder.tsv \</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">--phenoBinary yes \</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">--phenoName MDD \</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">--subID ID_linkage.tsv \</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">--outputFile LASSO_weights_MDD</a></code></pre></div>
 
 </body>
 </html>
