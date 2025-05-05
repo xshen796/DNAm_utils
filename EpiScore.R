@@ -93,7 +93,7 @@ calc_MRS <- function(F_mvalue,Obj_pheno,Obj_weight){
 
 logging('Create MRS')
 logging(c("Started: ", date()))
-logging(c('M-value directory: ', meth.dat.loc))
+logging(c('M-value directory: ', D_METH))
 logging(c('Testing sample: ', sub.ID))
 logging(c('Lasso regression weights:', lasso.coef.datloc))
 logging(c('Output file:', output))
