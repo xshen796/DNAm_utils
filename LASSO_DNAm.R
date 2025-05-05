@@ -40,7 +40,7 @@ set.seed(1963) # for reproducibility
 
 # Define process managing functions ---------------------------------------
 
-log_file <- gsub('.txt','.log',F_output)
+log_file <- paste(F_output,'.log')
 logging <- function(str) { 
    cat(paste0(paste0(str, collapse=''), '\n'), file=log_file, append=TRUE) 
    cat(paste0(paste0(str, collapse=''), '\n')) 
