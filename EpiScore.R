@@ -13,6 +13,7 @@ library(data.table)
 library(dplyr)
 library(optparse)
 library(tibble)
+library(readr)
 
 # Parse arguments
 args <- commandArgs(trailingOnly = FALSE)
