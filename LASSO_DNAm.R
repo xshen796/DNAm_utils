@@ -129,6 +129,7 @@ X.bm <- as.matrix(meth_intersected)
 # cv lasso: fivefold cross-validation used for hyperparametre tuning
 if (phenoBinary == 'yes') {
   x_model = 'binomial'
+}else{
   x_model = 'gaussian'
 }
 
