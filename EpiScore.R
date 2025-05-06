@@ -36,7 +36,7 @@ output = opt$out
 # Load data ---------------------------------------------------------------
 
 ## individuals to create scores in
-pheno_file <- read_tsv(sub.ID) %>% .[,1] %>% as.vector
+pheno_file <- read_tsv(subID) %>% .[,1] %>% as.vector
 
 ## LASSO co-efficients
 coef.training <- read_tsv(F_LassoCoef)
@@ -94,7 +94,7 @@ calc_MRS <- function(F_mvalue,Obj_pheno,Obj_weight){
 logging('Create MRS')
 logging(c("Started: ", date()))
 logging(c('M-value directory: ', D_METH))
-logging(c('Testing sample: ', sub.ID))
+logging(c('Testing sample: ', subID))
 logging(c('Lasso regression weights:', F_LassoCoef))
 logging(c('Output file:', output))
 logging(' ')
