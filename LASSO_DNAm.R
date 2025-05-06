@@ -129,8 +129,10 @@ X.bm <- as.matrix(meth_intersected)
 # cv lasso: fivefold cross-validation used for hyperparametre tuning
 if (phenoBinary == 'yes') {
   x_model = 'binomial'
+  x_measure = "class"
 }else{
   x_model = 'gaussian'
+  x_measure = 'mse'
 }
 
 # Find N of available cores for paralleling
@@ -145,7 +147,8 @@ if (k.core > 1) {
 registerDoParallel(k.core)
 
 # Lasso regression
-cvfit <- cv.glmnet(X.bm, y.input, seed = 1234, nfolds = 5, family=x_model, parallel=TRUE, standardize=TRUE, type.measure='deviance') 
+cvfit <- cv.glmnet(X.bm, y.input, seed = 1234, nfolds = 5, family=x_model, 
+                   parallel=TRUE, standardize=TRUE, type.measure=x_measure) 
 
 # get coefficients
 weights = coef(cvfit,s='lambda.min') %>% .[-1,] %>%
