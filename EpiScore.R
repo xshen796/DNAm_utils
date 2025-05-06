@@ -28,7 +28,7 @@ args = commandArgs(trailingOnly=TRUE)
 opt <- parse_args(OptionParser(option_list=option_list), args=args)
 
 D_METH = opt$methFolder
-sub.ID = opt$subID
+subID = opt$subID
 F_LassoCoef = opt$lassoCoef
 output = opt$out
 
