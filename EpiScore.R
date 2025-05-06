@@ -19,7 +19,7 @@ library(readr)
 args <- commandArgs(trailingOnly = FALSE)
 parse <- OptionParser()
 option_list <- list(
-   make_option('--methFolder', type='character', help="Folder for methylation data (methylation data in RDS format)", action='store'),
+   make_option('--methFolder', type='character', help="Folder for methylation data (methylation data in tsv format)", action='store'),
    make_option('--subID', type='character', help="Subjects to include in the analysis", action='store',default=NULL),
    make_option('--lassoCoef', type='character', help='Lasso coefficients', action='store'),
    make_option('--out', type='character', help='Output file', action='store')
@@ -49,7 +49,7 @@ ls.meth.file.loc <- list.files(path = D_METH,full.names=T)
 # Define functions --------------------------------------------------------
 # Process managing functions:
 # Log process
-log_file <- gsub('.rds','.log',output)
+log_file <- paste0(output,'.log')
 logging <- function(str) { 
   cat(paste0(paste0(str, collapse=''), '\n'), file=log_file, append=TRUE) 
   cat(paste0(paste0(str, collapse=''), '\n')) 
@@ -95,7 +95,7 @@ logging('Create MRS')
 logging(c("Started: ", date()))
 logging(c('M-value directory: ', D_METH))
 logging(c('Testing sample: ', sub.ID))
-logging(c('Lasso regression weights:', lasso.coef.datloc))
+logging(c('Lasso regression weights:', F_LassoCoef))
 logging(c('Output file:', output))
 logging(' ')
 
