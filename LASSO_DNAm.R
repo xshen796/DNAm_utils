@@ -129,10 +129,10 @@ X.bm <- as.matrix(meth_intersected)
 # cv lasso: fivefold cross-validation used for hyperparametre tuning
 if (phenoBinary == 'yes') {
   x_model = 'binomial'
-  x_measure = "class"
+  x_measure = "deviance"
 }else{
   x_model = 'gaussian'
-  x_measure = 'mse'
+  x_measure = 'default'
 }
 
 # Find N of available cores for paralleling
