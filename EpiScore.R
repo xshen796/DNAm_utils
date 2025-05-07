@@ -64,13 +64,12 @@ calc_MRS <- function(F_mvalue,Obj_pheno,Obj_weight){
   # Load m-values
   data <- read_tsv(F_mvalue)
   
-  # Subset individuals for testing
-  # if(!is.null(opt[['subID']])) {
-  #   meth = data %>% filter(ID %in% subID)                          
-  # }else{
-  #   meth=data
-  # }
-  meth=data
+  #Subset individuals for testing
+  if(!is.null(opt[['subID']])) {
+    meth = data %>% filter(ID %in% subID)
+  }else{
+    meth=data
+  }
   rm(data) # remove after use 
   
   # Select intersecting CpGs
