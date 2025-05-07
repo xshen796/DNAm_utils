@@ -36,7 +36,7 @@ output = opt$out
 # Load data ---------------------------------------------------------------
 
 ## individuals to create scores in
-pheno_file <- read_tsv(subID) %>% .[,1] %>% as.vector
+pheno_file <- read_tsv(subID) %>% .[[1]] %>% as.vector
 
 ## LASSO co-efficients
 coef.training <- read_tsv(F_LassoCoef)
@@ -59,17 +59,18 @@ logging <- function(str) {
 
 calc_MRS <- function(F_mvalue,Obj_pheno,Obj_weight){
   
-  logging(c('Processing:\t', F_mvalue %>% basename))
+  #logging(c('Processing:\t', F_mvalue %>% basename))
   
   # Load m-values
   data <- read_tsv(F_mvalue)
   
   # Subset individuals for testing
-  if(!is.null(opt[['subID']])) {
-    meth = data %>% filter(ID %in% subID)                          
-  }else{
-    meth=data
-  }
+  # if(!is.null(opt[['subID']])) {
+  #   meth = data %>% filter(ID %in% subID)                          
+  # }else{
+  #   meth=data
+  # }
+  meth=data
   rm(data) # remove after use 
   
   # Select intersecting CpGs
