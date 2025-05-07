@@ -3,7 +3,7 @@
 ## 09/01/2025
 
 ## Info on file formats
-## pheno_file is a file with a column called ID which matches the methylation ID (colnames) in prenormalized beta file
+## ID.include is a file with a column called ID which matches the methylation ID (colnames) in prenormalized beta file
 ## coef is a 2 column file with cpg and coefficient (coef.name) and (coef.value)
 ## output location is the name of the output file
 
@@ -36,7 +36,7 @@ output = opt$out
 # Load data ---------------------------------------------------------------
 
 ## individuals to create scores in
-pheno_file <- read_tsv(subID) %>% .[[1]] %>% as.vector
+ID.include <- read_tsv(subID) %>% .[[1]] %>% as.vector
 
 ## LASSO co-efficients
 coef.training <- read_tsv(F_LassoCoef)
@@ -59,14 +59,14 @@ logging <- function(str) {
 
 calc_MRS <- function(F_mvalue,Obj_pheno,Obj_weight){
   
-  #logging(c('Processing:\t', F_mvalue %>% basename))
+  logging(c('Processing:\t', F_mvalue %>% basename))
   
   # Load m-values
   data <- read_tsv(F_mvalue)
   
   #Subset individuals for testing
   if(!is.null(opt[['subID']])) {
-    meth = data %>% filter(ID %in% subID)
+    meth = data %>% .[.$ID %in% ID.include,]
   }else{
     meth=data
   }
@@ -101,7 +101,7 @@ logging(' ')
 
 
 pred_dep.allCHR = as.list(ls.meth.file.loc) %>%
-  lapply(.,FUN=calc_MRS,Obj_pheno=pheno_file,Obj_weight=coef.training) 
+  lapply(.,FUN=calc_MRS,Obj_pheno=ID.include,Obj_weight=coef.training) 
 
 ref.ID=pred_dep.allCHR[[1]]$ID
 pred_dep.allCHR = pred_dep.allCHR %>%
