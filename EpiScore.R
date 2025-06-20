@@ -36,7 +36,7 @@ output = opt$out
 # Load data ---------------------------------------------------------------
 
 ## individuals to create scores in
-ID.include <- read_tsv(subID) %>% .[[1]] %>% as.vector
+ID.include <- read_tsv(subID) %>% .$ID %>% as.vector
 
 ## LASSO co-efficients
 coef.training <- read_tsv(F_LassoCoef)
