@@ -27,7 +27,7 @@ library(knitr)           # Report generation
 
 -   Input format: folder; Flag: --methFolder
 
--   Description: DNAm data should be stored in .rds format. Columns are participants and rows are CpG sites.
+-   Description: DNAm data should be stored in .tsv format. Columns are participants and rows are CpG sites.
 
 -   Example
 

@@ -3,7 +3,7 @@
 ## 09/01/2025
 
 ## Info on file formats
-## pheno_file is a file with a column called ID which matches the methylation ID (colnames) in prenormalized beta file
+## ID.include is a file with a column called ID which matches the methylation ID (colnames) in prenormalized beta file
 ## coef is a 2 column file with cpg and coefficient (coef.name) and (coef.value)
 ## output location is the name of the output file
 
@@ -13,12 +13,13 @@ library(data.table)
 library(dplyr)
 library(optparse)
 library(tibble)
+library(readr)
 
 # Parse arguments
 args <- commandArgs(trailingOnly = FALSE)
 parse <- OptionParser()
 option_list <- list(
-   make_option('--methFolder', type='character', help="Folder for methylation data (methylation data in RDS format)", action='store'),
+   make_option('--methFolder', type='character', help="Folder for methylation data (methylation data in tsv format)", action='store'),
    make_option('--subID', type='character', help="Subjects to include in the analysis", action='store',default=NULL),
    make_option('--lassoCoef', type='character', help='Lasso coefficients', action='store'),
    make_option('--out', type='character', help='Output file', action='store')
@@ -26,29 +27,29 @@ option_list <- list(
 args = commandArgs(trailingOnly=TRUE)
 opt <- parse_args(OptionParser(option_list=option_list), args=args)
 
-meth.dat.loc = opt$methdat
-sub.ID = opt$subID
-lasso.coef.datloc = opt$lassoCoef
+D_METH = opt$methFolder
+subID = opt$subID
+F_LassoCoef = opt$lassoCoef
 output = opt$out
 
 
 # Load data ---------------------------------------------------------------
 
 ## individuals to create scores in
-pheno_file <- read_tsv(sub.ID) %>% .[,1] %>% as.vector
+ID.include <- read_tsv(subID) %>% .$ID %>% as.vector
 
 ## LASSO co-efficients
-coef.training <- read_tsv(lasso.coef.datloc)
+coef.training <- read_tsv(F_LassoCoef)
 colnames(coef.training)=c('Marker','Weight')
 
 ## Load methylation data files
-ls.meth.file.loc=list.files(path=meth.dat.loc,full.names=T)
+ls.meth.file.loc <- list.files(path = D_METH,full.names=T)
 
 
 # Define functions --------------------------------------------------------
 # Process managing functions:
 # Log process
-log_file <- gsub('.rds','.log',output)
+log_file <- paste0(output,'.log')
 logging <- function(str) { 
   cat(paste0(paste0(str, collapse=''), '\n'), file=log_file, append=TRUE) 
   cat(paste0(paste0(str, collapse=''), '\n')) 
@@ -63,9 +64,9 @@ calc_MRS <- function(F_mvalue,Obj_pheno,Obj_weight){
   # Load m-values
   data <- read_tsv(F_mvalue)
   
-  # Subset individuals for testing
+  #Subset individuals for testing
   if(!is.null(opt[['subID']])) {
-    meth = data %>% filter(ID %in% subID)                          
+    meth = data %>% .[.$ID %in% ID.include,]
   }else{
     meth=data
   }
@@ -92,15 +93,15 @@ calc_MRS <- function(F_mvalue,Obj_pheno,Obj_weight){
 
 logging('Create MRS')
 logging(c("Started: ", date()))
-logging(c('M-value directory: ', meth.dat.loc))
-logging(c('Testing sample: ', sub.ID))
-logging(c('Lasso regression weights:', lasso.coef.datloc))
+logging(c('M-value directory: ', D_METH))
+logging(c('Testing sample: ', subID))
+logging(c('Lasso regression weights:', F_LassoCoef))
 logging(c('Output file:', output))
 logging(' ')
 
 
 pred_dep.allCHR = as.list(ls.meth.file.loc) %>%
-  lapply(.,FUN=calc_MRS,Obj_pheno=pheno_file,Obj_weight=coef.training) 
+  lapply(.,FUN=calc_MRS,Obj_pheno=ID.include,Obj_weight=coef.training) 
 
 ref.ID=pred_dep.allCHR[[1]]$ID
 pred_dep.allCHR = pred_dep.allCHR %>%

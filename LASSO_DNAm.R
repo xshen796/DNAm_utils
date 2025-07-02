@@ -40,7 +40,7 @@ set.seed(1963) # for reproducibility
 
 # Define process managing functions ---------------------------------------
 
-log_file <- gsub('.txt','.log',F_output)
+log_file <- paste(F_output,'.log')
 logging <- function(str) { 
    cat(paste0(paste0(str, collapse=''), '\n'), file=log_file, append=TRUE) 
    cat(paste0(paste0(str, collapse=''), '\n')) 
@@ -129,7 +129,10 @@ X.bm <- as.matrix(meth_intersected)
 # cv lasso: fivefold cross-validation used for hyperparametre tuning
 if (phenoBinary == 'yes') {
   x_model = 'binomial'
+  x_measure = "deviance"
+}else{
   x_model = 'gaussian'
+  x_measure = 'default'
 }
 
 # Find N of available cores for paralleling
@@ -144,7 +147,8 @@ if (k.core > 1) {
 registerDoParallel(k.core)
 
 # Lasso regression
-cvfit <- cv.glmnet(X.bm, y.input, seed = 1234, nfolds = 5, family=x_model, parallel=TRUE, standardize=TRUE, type.measure='deviance') 
+cvfit <- cv.glmnet(X.bm, y.input, seed = 1234, nfolds = 5, family=x_model, 
+                   parallel=TRUE, standardize=TRUE, type.measure=x_measure) 
 
 # get coefficients
 weights = coef(cvfit,s='lambda.min') %>% .[-1,] %>%
