@@ -151,8 +151,8 @@ Rscript LASSO_DNAm.R --methFolder mval_test \
 ```bash
 nextflow run LASSO_DNAm.nf \
 -resume -qs 4 \
---meth "mval_test/*.tsv" \
---pheno disorder.tsv \
+--meth "TOYDATA_MRS/mval_test/*.tsv" \
+--pheno TOYDATA_MRS/disorder.tsv \
 --binary yes
 ```
 
@@ -164,10 +164,8 @@ nextflow run LASSO_DNAm.nf \
 --meth "TOYDATA_MRS/mval_test/*.tsv" \
 --pheno TOYDATA_MRS/disorder.tsv \
 --binary yes \
--profile conda \
 -config LASSO_DNAm.config \
--with-conda \
--with-report
+-profile conda 
 ```
 
 ### Run with docker
@@ -178,10 +176,8 @@ nextflow run LASSO_DNAm.nf \
 --meth "TOYDATA_MRS/mval_test/*.tsv" \
 --pheno TOYDATA_MRS/disorder.tsv \
 --binary yes \
--profile docker \
 -config LASSO_DNAm.config \
--with-docker \
--with-report
+-profile docker
 ```
 
 ### Run with singularity
@@ -192,8 +188,6 @@ nextflow run LASSO_DNAm.nf \
 --meth "TOYDATA_MRS/mval_test/*.tsv" \
 --pheno TOYDATA_MRS/disorder.tsv \
 --binary yes \
--profile singularity \
 -config LASSO_DNAm.config \
--with-singularity \
--with-report
+-profile singularity
 ```
